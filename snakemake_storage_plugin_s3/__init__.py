@@ -212,15 +212,17 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         information as possible. Only retrieve that information that comes for free
         given the current object.
         """
-        # This is optional and can be left as is
-
         # If this is implemented in a storage object, results have to be stored in
         # the given IOCache object.
+
+        # TODO implement
         pass
 
     def get_inventory_parent(self) -> Optional[str]:
         """Return the parent directory of this object."""
         # this is optional and can be left as is
+
+        # TODO implement
         return None
 
     def local_suffix(self) -> str:
@@ -308,6 +310,9 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
                 item.delete()
         else:
             self.s3obj().delete()
+        # check if bucket is empty and remove it if so
+        if not any(self.s3bucket().objects.all()):
+            self.s3bucket().delete()
 
     @retry_decorator
     def list_candidate_matches(self) -> Iterable[str]:
