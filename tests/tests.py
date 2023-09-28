@@ -1,4 +1,5 @@
 from typing import Optional, Type
+import uuid
 from snakemake_interface_storage_plugins.tests import TestStorageBase
 from snakemake_interface_storage_plugins.storage_provider import StorageProviderBase
 from snakemake_interface_storage_plugins.settings import StorageProviderSettingsBase
@@ -12,6 +13,11 @@ class TestStorageNoSettings(TestStorageBase):
 
     def get_query(self) -> str:
         return "s3://snakemake-test-bucket/test-file.txt"
+
+    def get_query_not_existing(self) -> str:
+        bucket = uuid.uuid4().hex
+        key = uuid.uuid4().hex
+        return f"s3://{bucket}/{key}"
 
     def get_storage_provider_cls(self) -> Type[StorageProviderBase]:
         # Return the StorageProvider class of this plugin

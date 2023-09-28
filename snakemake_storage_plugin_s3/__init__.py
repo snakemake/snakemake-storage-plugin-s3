@@ -240,7 +240,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             self.s3obj().load()
         except botocore.exceptions.ClientError as e:
             if e.response["Error"]["Code"] == "404":
-                if self.is_dir():
+                if self.bucket_exists() and self.is_dir():
                     return True
                 return False
             else:
@@ -290,7 +290,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
     def store_object(self):
         # Ensure that the object is stored at the location specified by
         # self.local_path().
-        if not self.bucket_exists(self.bucket):
+        if not self.bucket_exists():
             self.provider.s3c.create_bucket(Bucket=self.bucket)
 
         if self.local_path().is_dir():
@@ -330,9 +330,9 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
                 "supported."
             )
 
-    def bucket_exists(self, bucket_name):
+    def bucket_exists(self):
         try:
-            self.provider.s3c.meta.client.head_bucket(Bucket=bucket_name)
+            self.provider.s3c.meta.client.head_bucket(Bucket=self.bucket)
             return True
         except Exception:
             return False
