@@ -92,6 +92,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             "help": "S3 API retries",
             "env_var": False,
             "required": False,
+            "type": int,
         },
     )
 
@@ -236,6 +237,9 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
     # Here we simply rely on botos retry logic.
     def exists(self) -> bool:
         # return True if the object exists
+        # import traceback
+        # traceback.print_stack()
+        # print("exists", self.query)
         try:
             self.s3obj().load()
         except botocore.exceptions.ClientError as e:
