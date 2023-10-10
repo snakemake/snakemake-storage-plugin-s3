@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Optional
 from urllib.parse import urlparse
@@ -10,6 +11,7 @@ from snakemake_interface_storage_plugins.settings import StorageProviderSettings
 from snakemake_interface_storage_plugins.storage_provider import (
     StorageProviderBase,
     StorageQueryValidationResult,
+    ExampleQuery,
 )
 from snakemake_interface_storage_plugins.storage_object import (
     StorageObjectRead,
@@ -144,6 +146,14 @@ class StorageProvider(StorageProviderBase):
                 },
             ),
             verify=False,  # TODO required?
+        )
+
+    @classmethod
+    def example_query(cls) -> ExampleQuery:
+        """Return an example query with description for this storage provider."""
+        return ExampleQuery(
+            query="s3://mybucket/myfile.txt",
+            description="A file in an S3 bucket",
         )
 
     def use_rate_limiter(self) -> bool:
