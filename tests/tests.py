@@ -1,4 +1,4 @@
-from typing import Optional, Type
+from typing import List, Optional, Type
 import uuid
 from snakemake_interface_storage_plugins.tests import TestStorageBase
 from snakemake_interface_storage_plugins.storage_provider import StorageProviderBase
@@ -30,3 +30,6 @@ class TestStorageNoSettings(TestStorageBase):
             access_key="Q3AM3UQ867SPQQA43P2F",
             secret_key="zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG",
         )
+
+    def get_example_args(self) -> List[str]:
+        return []
