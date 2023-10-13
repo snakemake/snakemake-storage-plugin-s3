@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.0...v0.2.1) (2023-10-13)
+
+
+### Bug Fixes
+
+* add homepage to metadata ([825c969](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/825c9693909097c590b8fbc6bf7ffb3b94d0ef4f))
+
 ## [0.2.0](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.1.0...v0.2.0) (2023-10-11)
 
 
