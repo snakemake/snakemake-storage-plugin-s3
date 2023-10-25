@@ -60,7 +60,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             "help": "S3 access key (if omitted, credentials are taken from "
             ".aws/credentials as e.g. created by aws configure)",
             "env_var": True,
-            "required": False,
+            "required": True,
         },
     )
     secret_key: Optional[str] = field(
@@ -69,7 +69,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             "help": "S3 secret key (if omitted, credentials are taken from "
             ".aws/credentials as e.g. created by aws configure)",
             "env_var": True,
-            "required": False,
+            "required": True,
         },
     )
     token: Optional[str] = field(
@@ -109,15 +109,6 @@ class StorageProviderSettings(StorageProviderSettingsBase):
                 self.secret_key = credentials.secret_key
             if self.token is None:
                 self.token = credentials.token
-
-        if self.access_key is None:
-            raise WorkflowError(
-                "Invalid settings for s3 storage: no access key provided"
-            )
-        if self.secret_key is None:
-            raise WorkflowError(
-                "Invalid settings for s3 storage: no secret key provided"
-            )
 
 
 # Required:
