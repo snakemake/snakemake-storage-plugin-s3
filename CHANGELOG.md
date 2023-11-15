@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.5](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.4...v0.2.5) (2023-11-15)
+
+
+### Bug Fixes
+
+* adapt to changes in interface ([2ab1c31](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/2ab1c313107523e6778e61617c8864f9074ed0fc))
+
+
+### Performance Improvements
+
+* implemented inventory functionality for dramatically reducing the S3 requests ([3a06bb0](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/3a06bb0dc9a890a8734c7cff5989c138a2a657fc))
+
 ## [0.2.4](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.3...v0.2.4) (2023-10-25)
 
 
