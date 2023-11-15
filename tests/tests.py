@@ -11,10 +11,10 @@ class TestStorageNoSettings(TestStorageBase):
     __test__ = True
     retrieve_only = False
 
-    def get_query(self) -> str:
+    def get_query(self, tmp_path) -> str:
         return "s3://snakemake-test-bucket/test-file.txt"
 
-    def get_query_not_existing(self) -> str:
+    def get_query_not_existing(self, tmp_path) -> str:
         bucket = uuid.uuid4().hex
         key = uuid.uuid4().hex
         return f"s3://{bucket}/{key}"
