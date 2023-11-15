@@ -216,7 +216,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             parsed = urlparse(self.query)
             self.bucket = parsed.netloc
             self.key = parsed.path.lstrip("/")
-            self._local_suffix = f"{self.bucket}/{self.key}"
+            self._local_suffix = self._local_suffix_from_key(self.key)
         self._is_dir = None
 
     def s3obj(self, subkey: Optional[str] = ""):
@@ -235,18 +235,26 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         # If this is implemented in a storage object, results have to be stored in
         # the given IOCache object.
 
-        # TODO implement
-        pass
+        # check if bucket exists
+        if not self.bucket_exists():
+            cache.exists_in_storage[self.cache_key()] = False
+        else:
+            for obj in self.s3bucket().objects.all():
+                key = self.cache_key(self._local_suffix_from_key(obj.key))
+                cache.mtime[key] = obj.last_modified.timestamp()
+                cache.size[key] = obj.content_length
+                cache.exists_in_storage[key] = True
 
     def get_inventory_parent(self) -> Optional[str]:
         """Return the parent directory of this object."""
-        # this is optional and can be left as is
-
-        # TODO implement
+        # TODO potentially implement later for speeding up existence calculation
         return None
 
     def local_suffix(self) -> str:
         return self._local_suffix
+    
+    def _local_suffix_from_key(self, key: str) -> str:
+        return f"{self.bucket}/{key}"
 
     def cleanup(self):
         # Close any open connections, unmount stuff, etc.
