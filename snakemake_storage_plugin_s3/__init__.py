@@ -21,6 +21,7 @@ from snakemake_interface_storage_plugins.storage_object import (
 from snakemake_interface_storage_plugins.io import (
     IOCacheStorageInterface,
     get_constant_prefix,
+    Mtime,
 )
 from snakemake_interface_storage_plugins.common import Operation
 
@@ -246,8 +247,8 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             cache.exists_in_storage[self.get_inventory_parent()] = True
             for obj in self.s3bucket().objects.all():
                 key = self.cache_key(self._local_suffix_from_key(obj.key))
-                cache.mtime[key] = obj.last_modified.timestamp()
-                cache.size[key] = obj.content_length
+                cache.mtime[key] = Mtime(storage=obj.last_modified.timestamp())
+                cache.size[key] = obj.size
                 cache.exists_in_storage[key] = True
 
     def get_inventory_parent(self) -> Optional[str]:
