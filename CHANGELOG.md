@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.6](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.5...v0.2.6) (2023-11-23)
+
+
+### Bug Fixes
+
+* inventory calculation ([0915a5d](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/0915a5d18caf3413cff1891dddd32dff674b2f81))
+* remove superfluous method ([10ac28b](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/10ac28ba7b57ab565a278c2df00e4b9d8a9a002a))
+
 ## [0.2.5](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.4...v0.2.5) (2023-11-15)
 
 
