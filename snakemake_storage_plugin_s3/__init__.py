@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Iterable, Optional
+from typing import Iterable, Optional
 from urllib.parse import urlparse
 
 import boto3
@@ -189,16 +189,6 @@ class StorageProvider(StorageProviderBase):
             query=query,
             valid=True,
         )
-
-    def list_objects(self, query: Any) -> Iterable[str]:
-        """Return an iterator over all objects in the storage that match the query.
-
-        This is optional and can raise a NotImplementedError() instead.
-        """
-        parsed = urlparse(query)
-        bucket_name = parsed.netloc
-        b = self.s3.Bucket(bucket_name)
-        return [o.key for o in b.objects.iterator()]
 
 
 # Required:
