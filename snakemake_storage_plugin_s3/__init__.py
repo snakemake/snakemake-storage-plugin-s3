@@ -11,6 +11,7 @@ from snakemake_interface_storage_plugins.storage_provider import (
     StorageProviderBase,
     StorageQueryValidationResult,
     ExampleQuery,
+    QueryType,
 )
 from snakemake_interface_storage_plugins.storage_object import (
     StorageObjectRead,
@@ -145,6 +146,7 @@ class StorageProvider(StorageProviderBase):
         return [
             ExampleQuery(
                 query="s3://mybucket/myfile.txt",
+                type=QueryType.ANY,
                 description="A file in an S3 bucket",
             )
         ]
