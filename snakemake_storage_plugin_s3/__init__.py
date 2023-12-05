@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Iterable, Optional
+from typing import Iterable, List, Optional
 from urllib.parse import urlparse
 
 import boto3
@@ -140,12 +140,14 @@ class StorageProvider(StorageProviderBase):
         )
 
     @classmethod
-    def example_query(cls) -> ExampleQuery:
+    def example_queries(cls) -> List[ExampleQuery]:
         """Return an example query with description for this storage provider."""
-        return ExampleQuery(
-            query="s3://mybucket/myfile.txt",
-            description="A file in an S3 bucket",
-        )
+        return [
+            ExampleQuery(
+                query="s3://mybucket/myfile.txt",
+                description="A file in an S3 bucket",
+            )
+        ]
 
     def use_rate_limiter(self) -> bool:
         """Return False if no rate limiting is needed for this provider."""
