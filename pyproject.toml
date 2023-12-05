@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "snakemake-storage-plugin-s3"
-version = "0.2.6"
+version = "0.2.7"
 description = "A Snakemake storage plugin for S3 API storage (AWS S3, MinIO, etc.)"
 authors = ["Johannes Koester <johannes.koester@uni-due.de>"]
 readme = "README.md"

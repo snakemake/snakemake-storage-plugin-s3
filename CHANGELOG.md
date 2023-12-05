@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.7](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.6...v0.2.7) (2023-12-05)
+
+
+### Bug Fixes
+
+* adapt to interface change ([490493d](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/490493dab38bc3900cc19f78b4a2d07d72666155))
+
 ## [0.2.6](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.5...v0.2.6) (2023-11-23)
 
 
