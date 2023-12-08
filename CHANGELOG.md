@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.8](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.7...v0.2.8) (2023-12-08)
+
+
+### Documentation
+
+* update metadata ([d3528c3](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/d3528c3d981b04a95ae5bf3a52c3811c196d91df))
+
 ## [0.2.7](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.6...v0.2.7) (2023-12-05)
 
 
