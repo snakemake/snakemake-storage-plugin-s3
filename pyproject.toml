@@ -9,7 +9,7 @@ homepage = "https://github.com/snakemake/snakemake-storage-plugin-s3"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-snakemake-interface-common = "^1.12.0"
+snakemake-interface-common = "^1.14.0"
 snakemake-interface-storage-plugins = "^3.0.0"
 boto3 = "^1.28.55"
 botocore = "^1.31.55"
@@ -20,7 +20,7 @@ black = "^23.9.1"
 flake8 = "^6.1.0"
 coverage = "^7.3.1"
 pytest = "^7.4.2"
-snakemake = {git="https://github.com/snakemake/snakemake.git"}
+snakemake = {git="https://github.com/snakemake/snakemake.git", rev="cbbc23e35bfd1f96b63eb745d9aef098c1c36db9"}
 
 [build-system]
 requires = ["poetry-core"]
