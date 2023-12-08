@@ -4,7 +4,10 @@ version = "0.2.7"
 description = "A Snakemake storage plugin for S3 API storage (AWS S3, MinIO, etc.)"
 authors = ["Johannes Koester <johannes.koester@uni-due.de>"]
 readme = "README.md"
-homepage = "https://github.com/snakemake/snakemake-storage-plugin-s3"
+repository = "https://github.com/snakemake/snakemake-storage-plugin-s3"
+documentation = "https://snakemake.github.io/snakemake-plugin-catalog/plugins/storage/s3.html"
+license = "MIT"
+keywords = ["snakemake", "plugin", "storage", "s3"]
 
 
 [tool.poetry.dependencies]
@@ -20,7 +23,7 @@ black = "^23.9.1"
 flake8 = "^6.1.0"
 coverage = "^7.3.1"
 pytest = "^7.4.2"
-snakemake = {git="https://github.com/snakemake/snakemake.git", rev="cbbc23e35bfd1f96b63eb745d9aef098c1c36db9"}
+snakemake = {git="https://github.com/snakemake/snakemake.git"}
 
 [build-system]
 requires = ["poetry-core"]
