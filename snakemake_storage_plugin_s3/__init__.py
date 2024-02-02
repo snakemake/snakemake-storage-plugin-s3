@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Union
 from urllib.parse import urlparse
 
 import boto3
@@ -160,7 +160,7 @@ class StorageProvider(StorageProviderBase):
         provider."""
         ...
 
-    def rate_limiter_key(self, query: str, operation: Operation):
+    def rate_limiter_key(self, query: Union[str, List[str]], operation: Operation):
         """Return a key for identifying a rate limiter given a query and an operation.
 
         This is used to identify a rate limiter for the query.
@@ -170,13 +170,25 @@ class StorageProvider(StorageProviderBase):
         ...
 
     @classmethod
-    def is_valid_query(cls, query: str) -> StorageQueryValidationResult:
+    def is_valid_query(cls, query: Union[str, List[str]]) \
+            -> StorageQueryValidationResult:
         """Return whether the given query is valid for this storage provider."""
         # Ensure that also queries containing wildcards (e.g. {sample}) are accepted
         # and considered valid. The wildcards will be resolved before the storage
         # object is actually used.
         try:
-            parsed = urlparse(query)
+            if isinstance(query, str):
+                parsed = urlparse(query)
+            else:
+                # assume that querys are uniquely formed
+                if all(element.startswith("s3") for element in query):
+                    parsed = urlparse(query[0])
+                else:
+                    return StorageQueryValidationResult(
+                        query=query,
+                        valid=False,
+                        reason="must start with s3 (s3://...)",
+                    )
         except Exception as e:
             return StorageQueryValidationResult(
                 query=query,
@@ -208,7 +220,10 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         # Alternatively, you can e.g. prepare a connection to your storage backend here.
         # and set additional attributes.
         if self.is_valid_query():
-            parsed = urlparse(self.query)
+            if isinstance(self.query, str):
+                parsed = urlparse(self.query)
+            else:
+                parsed = urlparse(self.query[0])
             self.bucket = parsed.netloc
             self.key = parsed.path.lstrip("/")
             self._local_suffix = self._local_suffix_from_key(self.key)
