@@ -84,11 +84,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
     )
     signature_version: Optional[str] = field(
         default=None,
-        metadata={
-            "help": "S3 signature version",
-            "env_var": False,
-            "required": False,
-        },
+        metadata={"help": "S3 signature version", "env_var": False, "required": False},
     )
     retries: int = field(
         default=5,
@@ -132,10 +128,7 @@ class StorageProvider(StorageProviderBase):
             aws_session_token=self.settings.token,
             config=boto3.session.Config(
                 signature_version=self.settings.signature_version,
-                retries={
-                    "max_attempts": self.settings.retries,
-                    "mode": "standard",
-                },
+                retries={"max_attempts": self.settings.retries, "mode": "standard"},
             ),
             verify=False,  # TODO required?
         )
@@ -170,8 +163,9 @@ class StorageProvider(StorageProviderBase):
         ...
 
     @classmethod
-    def is_valid_query(cls, query: Union[str, List[str]]) \
-            -> StorageQueryValidationResult:
+    def is_valid_query(
+        cls, query: Union[str, List[str]]
+    ) -> StorageQueryValidationResult:
         """Return whether the given query is valid for this storage provider."""
         # Ensure that also queries containing wildcards (e.g. {sample}) are accepted
         # and considered valid. The wildcards will be resolved before the storage
@@ -185,26 +179,17 @@ class StorageProvider(StorageProviderBase):
                     parsed = urlparse(query[0])
                 else:
                     return StorageQueryValidationResult(
-                        query=query,
-                        valid=False,
-                        reason="must start with s3 (s3://...)",
+                        query=query, valid=False, reason="must start with s3 (s3://...)"
                     )
         except Exception as e:
             return StorageQueryValidationResult(
-                query=query,
-                valid=False,
-                reason=f"cannot be parsed as URL ({e})",
+                query=query, valid=False, reason=f"cannot be parsed as URL ({e})"
             )
         if parsed.scheme != "s3":
             return StorageQueryValidationResult(
-                query=query,
-                valid=False,
-                reason="must start with s3 (s3://...)",
+                query=query, valid=False, reason="must start with s3 (s3://...)"
             )
-        return StorageQueryValidationResult(
-            query=query,
-            valid=True,
-        )
+        return StorageQueryValidationResult(query=query, valid=True)
 
 
 # Required:
