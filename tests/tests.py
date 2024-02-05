@@ -50,8 +50,7 @@ class TestWorkflows(snakemake.common.tests.TestWorkflowsMinioPlayStorageBase):
         return "local"
 
     def get_executor_settings(self) -> Optional[ExecutorSettingsBase]:
-        from snakemake.executors.local import ExecutorSettings
-        return ExecutorSettings()
+        return None
 
     def get_assume_shared_fs(self) -> bool:
         return True
