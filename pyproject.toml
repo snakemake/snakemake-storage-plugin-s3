@@ -16,6 +16,7 @@ snakemake-interface-common = "^1.14.0"
 snakemake-interface-storage-plugins = "^3.0.0"
 boto3 = "^1.33"
 botocore = "^1.33"
+urllib3 = "^2.0.7"  # work around this issue: https://github.com/boto/botocore/issues/3111
 
 
 [tool.poetry.group.dev.dependencies]
