@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.9](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.8...v0.2.9) (2024-02-07)
+
+
+### Bug Fixes
+
+* adapt to newer botocore ([#17](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/17)) ([77d789a](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/77d789a2f642322896e2abe68307de4ce3c732f9))
+
 ## [0.2.8](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.7...v0.2.8) (2023-12-08)
 
 
