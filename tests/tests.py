@@ -3,8 +3,12 @@ import uuid
 from snakemake_interface_storage_plugins.tests import TestStorageBase
 from snakemake_interface_storage_plugins.storage_provider import StorageProviderBase
 from snakemake_interface_storage_plugins.settings import StorageProviderSettingsBase
-
+from snakemake_interface_executor_plugins.settings import ExecutorSettingsBase
+from snakemake_interface_executor_plugins.registry import ExecutorPluginRegistry
+from snakemake.executors import local as local_executor
 from snakemake_storage_plugin_s3 import StorageProvider, StorageProviderSettings
+import snakemake.common.tests
+import snakemake.settings
 
 
 class TestStorageNoSettings(TestStorageBase):
@@ -33,3 +37,25 @@ class TestStorageNoSettings(TestStorageBase):
 
     def get_example_args(self) -> List[str]:
         return []
+
+
+registry = ExecutorPluginRegistry()
+registry.register_plugin("local", local_executor)
+
+
+class TestWorkflows(snakemake.common.tests.TestWorkflowsMinioPlayStorageBase):
+    __test__ = True
+
+    def get_executor(self) -> str:
+        return "local"
+
+    def get_executor_settings(self) -> Optional[ExecutorSettingsBase]:
+        return None
+
+    def get_assume_shared_fs(self) -> bool:
+        return True
+
+    def get_remote_execution_settings(
+        self,
+    ) -> snakemake.settings.RemoteExecutionSettings:
+        return snakemake.settings.RemoteExecutionSettings()
