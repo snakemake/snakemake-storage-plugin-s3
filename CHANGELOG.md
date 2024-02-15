@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.10](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.9...v0.2.10) (2024-02-15)
+
+
+### Bug Fixes
+
+* pin urrllib to avoid boto bug ([#19](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/19)) ([ab680d9](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/ab680d9a745aaf018d98b2eed38246e39e0a646d))
+
 ## [0.2.9](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.8...v0.2.9) (2024-02-07)
 
 
