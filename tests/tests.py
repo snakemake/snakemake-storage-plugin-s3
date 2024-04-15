@@ -14,6 +14,7 @@ import snakemake.settings
 class TestStorageNoSettings(TestStorageBase):
     __test__ = True
     retrieve_only = False
+    files_only = False
 
     def get_query(self, tmp_path) -> str:
         return "s3://snakemake-test-bucket/test-file.txt"
