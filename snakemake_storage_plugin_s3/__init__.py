@@ -296,8 +296,8 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         if self.is_dir():
             self.local_path().mkdir(parents=True, exist_ok=True)
             for item in self.get_subkeys():
-                if item.key != self.s3obj().key:
-                    item.Object().download_file(self.local_path() / item.key)
+                subkey = item.key.split("/", 1)[1]
+                item.Object().download_file(self.local_path() / subkey)
         else:
             self.s3obj().download_file(self.local_path())
 
