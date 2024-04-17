@@ -6,11 +6,7 @@
 ### Bug Fixes
 
 * update to at least 3.2.2 of storage interface ([a0bb3a5](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/a0bb3a5faadef23ac030cd01505327c8fc7cc897))
-
-
-### Miscellaneous Chores
-
-* release 0.2.11 ([3d5a4b4](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/3d5a4b4d369211d10cdced3ea25eecb2215bcc8c))
+* fix errors when retrieving directories
 
 ## [0.2.10](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.9...v0.2.10) (2024-02-15)
 
