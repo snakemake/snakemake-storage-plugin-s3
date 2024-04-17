@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.11](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.10...v0.2.11) (2024-04-17)
+
+
+### Bug Fixes
+
+* update to at least 3.2.2 of storage interface ([a0bb3a5](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/a0bb3a5faadef23ac030cd01505327c8fc7cc897))
+* fix errors when retrieving directories
+
 ## [0.2.10](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.9...v0.2.10) (2024-02-15)
 
 
