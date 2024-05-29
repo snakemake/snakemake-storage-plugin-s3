@@ -295,8 +295,9 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         # Ensure that the object is accessible locally under self.local_path()
         if self.is_dir():
             self.local_path().mkdir(parents=True, exist_ok=True)
-            for item in self.get_subkeys():
-                subkey = item.key.split("/", 1)[1]
+            for item in self.get_subkeys():        
+                prefix_length = len(self.s3obj().key) + 1 # + 1 for trailing slash
+                subkey = item.key[prefix_length:]
                 localpath = self.local_path() / subkey
                 localpath.parent.mkdir(parents=True, exist_ok=True)
                 item.Object().download_file(localpath)
