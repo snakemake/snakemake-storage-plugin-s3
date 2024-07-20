@@ -62,7 +62,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             "help": "S3 access key (if omitted, credentials are taken from "
             ".aws/credentials as e.g. created by aws configure)",
             "env_var": True,
-            "required": True,
+            "required": False,
         },
     )
     secret_key: Optional[str] = field(
@@ -71,7 +71,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             "help": "S3 secret key (if omitted, credentials are taken from "
             ".aws/credentials as e.g. created by aws configure)",
             "env_var": True,
-            "required": True,
+            "required": False,
         },
     )
     token: Optional[str] = field(
@@ -99,12 +99,22 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             "type": int,
         },
     )
+    forward_credentials_to_remote: int = field(
+        default=1,
+        metadata={
+            "help": "When using a remote executor, forward the credentials "
+            "when spawning the job. The default is yes but it can expose credentials "
+            "which can be a security issue",
+            "env_var": False,
+            "required": False
+        }
+    )
 
     def __post_init__(self):
         session = boto3.Session()
         credentials = session.get_credentials()
 
-        if credentials:
+        if credentials and self.forward_credentials_to_remote:
             if self.access_key is None:
                 self.access_key = credentials.access_key
             if self.secret_key is None:
