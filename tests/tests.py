@@ -17,7 +17,7 @@ class TestStorageNoSettings(TestStorageBase):
     files_only = False
 
     def get_query(self, tmp_path) -> str:
-        return "s3://snakemake-test-bucket/test-file.txt"
+        return "s3://snakemake-test-bucket/testdir1/testdir2/test-file.txt"
 
     def get_query_not_existing(self, tmp_path) -> str:
         bucket = uuid.uuid4().hex
