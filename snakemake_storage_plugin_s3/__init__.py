@@ -100,9 +100,6 @@ class StorageProviderSettings(StorageProviderSettingsBase):
         },
     )
 
-    def __post_init__(self):
-        pass
-
 
 # Required:
 # Implementation of your storage provider
