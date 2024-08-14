@@ -62,7 +62,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             "help": "S3 access key (if omitted, credentials are taken from "
             ".aws/credentials as e.g. created by aws configure)",
             "env_var": True,
-            "required": True,
+            "required": False,
         },
     )
     secret_key: Optional[str] = field(
@@ -71,7 +71,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             "help": "S3 secret key (if omitted, credentials are taken from "
             ".aws/credentials as e.g. created by aws configure)",
             "env_var": True,
-            "required": True,
+            "required": False,
         },
     )
     token: Optional[str] = field(
@@ -99,18 +99,6 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             "type": int,
         },
     )
-
-    def __post_init__(self):
-        session = boto3.Session()
-        credentials = session.get_credentials()
-
-        if credentials:
-            if self.access_key is None:
-                self.access_key = credentials.access_key
-            if self.secret_key is None:
-                self.secret_key = credentials.secret_key
-            if self.token is None:
-                self.token = credentials.token
 
 
 # Required:
