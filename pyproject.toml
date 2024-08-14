@@ -9,22 +9,20 @@ documentation = "https://snakemake.github.io/snakemake-plugin-catalog/plugins/st
 license = "MIT"
 keywords = ["snakemake", "plugin", "storage", "s3"]
 
-
 [tool.poetry.dependencies]
 python = "^3.11"
 snakemake-interface-common = "^1.14.0"
-snakemake-interface-storage-plugins = "^3.2.2"
+snakemake-interface-storage-plugins = "^3.2.4"
 # https://github.com/boto/botocore/commit/f9470df1af9f2a59d3c30f691e593d0e4abbe9e2
 boto3 = "^1.34.63"
 botocore = "^1.34.63"
-
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
 flake8 = "^6.1.0"
 coverage = "^7.3.1"
 pytest = "^7.4.2"
-snakemake = {git="https://github.com/snakemake/snakemake.git"}
+snakemake = "^8.18.0"
 setuptools = "*"
 
 [build-system]

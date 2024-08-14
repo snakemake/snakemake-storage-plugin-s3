@@ -8,7 +8,7 @@ from snakemake_interface_executor_plugins.registry import ExecutorPluginRegistry
 from snakemake.executors import local as local_executor
 from snakemake_storage_plugin_s3 import StorageProvider, StorageProviderSettings
 import snakemake.common.tests
-import snakemake.settings
+import snakemake.settings.types
 
 
 class TestStorageNoSettings(TestStorageBase):
@@ -17,7 +17,7 @@ class TestStorageNoSettings(TestStorageBase):
     files_only = False
 
     def get_query(self, tmp_path) -> str:
-        return "s3://snakemake-test-bucket/test-file.txt"
+        return "s3://snakemake-test-bucket/testdir1/testdir2/test-file.txt"
 
     def get_query_not_existing(self, tmp_path) -> str:
         bucket = uuid.uuid4().hex
@@ -58,5 +58,5 @@ class TestWorkflows(snakemake.common.tests.TestWorkflowsMinioPlayStorageBase):
 
     def get_remote_execution_settings(
         self,
-    ) -> snakemake.settings.RemoteExecutionSettings:
-        return snakemake.settings.RemoteExecutionSettings()
+    ) -> snakemake.settings.types.RemoteExecutionSettings:
+        return snakemake.settings.types.RemoteExecutionSettings()
