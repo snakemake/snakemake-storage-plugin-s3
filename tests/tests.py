@@ -8,7 +8,7 @@ from snakemake_interface_executor_plugins.registry import ExecutorPluginRegistry
 from snakemake.executors import local as local_executor
 from snakemake_storage_plugin_s3 import StorageProvider, StorageProviderSettings
 import snakemake.common.tests
-import snakemake.settings
+import snakemake.settings.types
 
 
 class TestStorageNoSettings(TestStorageBase):
@@ -58,5 +58,5 @@ class TestWorkflows(snakemake.common.tests.TestWorkflowsMinioPlayStorageBase):
 
     def get_remote_execution_settings(
         self,
-    ) -> snakemake.settings.RemoteExecutionSettings:
-        return snakemake.settings.RemoteExecutionSettings()
+    ) -> snakemake.settings.types.RemoteExecutionSettings:
+        return snakemake.settings.types.RemoteExecutionSettings()
