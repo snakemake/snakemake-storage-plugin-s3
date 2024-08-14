@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.12](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.11...v0.2.12) (2024-08-14)
+
+
+### Bug Fixes
+
+* allow boto3 to automatically refresh credentials ([#33](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/33)) ([fc92231](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/fc922318d0000dfba7584f97f5ee2afbba072f06))
+* fix retrieval of nested directories ([#27](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/27)) ([42e55c3](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/42e55c35841c45bf1018d50dfba6ff3340dd774a))
+
 ## [0.2.11](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.10...v0.2.11) (2024-04-17)
 
 
