@@ -57,12 +57,12 @@ class StorageProviderSettings(StorageProviderSettingsBase):
         },
     )
     aws_region: Optional[str] = field(
-            default=None,
-            metadata={
-                "help": "AWS S3 region constraint for AWS S3 storage requirement",
-                "env_var": True,
-                "required": False,
-            },
+        default=None,
+        metadata={
+            "help": "AWS S3 region constraint for AWS S3 storage requirement",
+            "env_var": True,
+            "required": False,
+        },
     )
     access_key: Optional[str] = field(
         default=None,
