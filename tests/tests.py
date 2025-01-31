@@ -32,7 +32,7 @@ class TestStorageNoSettings(TestStorageBase):
         # instantiate StorageProviderSettings of this plugin as appropriate
         return StorageProviderSettings(
             endpoint_url="http://127.0.0.1:9000",
-            access_key="mino",
+            access_key="minio",
             secret_key="minio123",
         )
 
