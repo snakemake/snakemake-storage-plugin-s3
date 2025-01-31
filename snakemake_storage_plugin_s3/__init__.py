@@ -328,7 +328,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             location_config = None
             if self.provider.settings.aws_region is not None:
                 location_config = {
-                    "LocationConstraint": self.provider.settings.region_name
+                    "LocationConstraint": self.provider.settings.aws_region
                 }
             self.provider.s3c.create_bucket(
                 Bucket=self.bucket, CreateBucketConfiguration=location_config
