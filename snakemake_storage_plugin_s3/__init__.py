@@ -39,30 +39,34 @@ from snakemake_interface_storage_plugins.common import Operation
 # settings.
 @dataclass
 class StorageProviderSettings(StorageProviderSettingsBase):
-    endpoint_url: Optional[str] = field(
-        default=None,
-        metadata={
-            "help": "S3 endpoint URL (if omitted, AWS S3 is used)",
-            # Optionally request that setting is also available for specification
-            # via an environment variable. The variable will be named automatically as
-            # SNAKEMAKE_<storage-plugin-name>_<param-name>, all upper case.
-            # This mechanism should only be used for passwords, usernames, and other
-            # credentials.
-            # For other items, we rather recommend to let people use a profile
-            # for setting defaults
-            # (https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles).
-            "env_var": False,
-            # Optionally specify that setting is required when the executor is in use.
-            "required": False,
-        },
+    endpoint_url: Optional[str] = (
+        field(
+            default=None,
+            metadata={
+                "help": "S3 endpoint URL (if omitted, AWS S3 is used)",
+                # Optionally request that setting is also available for specification
+                # via an environment variable. The variable will be named automatically as
+                # SNAKEMAKE_<storage-plugin-name>_<param-name>, all upper case.
+                # This mechanism should only be used for passwords, usernames, and other
+                # credentials.
+                # For other items, we rather recommend to let people use a profile
+                # for setting defaults
+                # (https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles).
+                "env_var": False,
+                # Optionally specify that setting is required when the executor is in use.
+                "required": False,
+            },
+        ),
     )
-    aws_region: Optional[str] = field(
-        default = None,
-        metadata={
-            "help": "AWS S3 region constraint for AWS S3 storage requirement"
-            "env_var": True
-            "required": False
-        }
+    aws_region: Optional[str] = (
+        field(
+            default=None,
+            metadata={
+                "help": "AWS S3 region constraint for AWS S3 storage requirement",
+                "env_var": True,
+                "required": False,
+            },
+        ),
     )
     access_key: Optional[str] = field(
         default=None,
@@ -323,8 +327,12 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         if not self.bucket_exists():
             location_config = None
             if self.provider.settings.aws_region is not None:
-                location_config = {'LocationConstraint': self.provider.settings.region_name}
-            self.provider.s3c.create_bucket(Bucket=self.bucket, CreateBucketConfiguration=location_config)
+                location_config = {
+                    "LocationConstraint": self.provider.settings.region_name
+                }
+            self.provider.s3c.create_bucket(
+                Bucket=self.bucket, CreateBucketConfiguration=location_config
+            )
 
         if self.local_path().is_dir():
             self._is_dir = True
