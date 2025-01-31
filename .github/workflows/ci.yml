@@ -90,9 +90,11 @@ jobs:
       - name: Start MinIO service
         run: docker-compose -f tests/docker-compose.yml up -d
 
+      - name: Setup MinIO client
+        uses: yakubique/setup-minio-cli@v1
+
       - name: Configure MinIO client
         run: |
-          pip install minio
           mc alias set minio http://localhost:9000 minio minio123
 
       - name: Install dependencies
