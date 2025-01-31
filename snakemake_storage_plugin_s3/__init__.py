@@ -45,7 +45,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             metadata={
                 "help": "S3 endpoint URL (if omitted, AWS S3 is used)",
                 # Optionally request that setting is also available for specification
-                # via an environment variable. The variable will be named automatically as
+                # via an environment variable. The variable will be named automatically as # noqa
                 # SNAKEMAKE_<storage-plugin-name>_<param-name>, all upper case.
                 # This mechanism should only be used for passwords, usernames, and other
                 # credentials.
@@ -53,7 +53,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
                 # for setting defaults
                 # (https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles).
                 "env_var": False,
-                # Optionally specify that setting is required when the executor is in use.
+                # Optionally specify that setting is required when the executor is in use. # noqa
                 "required": False,
             },
         ),
