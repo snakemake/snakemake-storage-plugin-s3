@@ -63,6 +63,7 @@ jobs:
 
   testing:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -80,6 +81,19 @@ jobs:
         with:
           python-version: "3.12"
           cache: poetry
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose
+
+      - name: Start MinIO service
+        run: docker-compose -f tests/docker-compose.yml up -d
+
+      - name: Configure MinIO client
+        run: |
+          pip install minio
+          mc alias set minio http://localhost:9000 minio minio123
 
       - name: Install dependencies
         run: poetry install
