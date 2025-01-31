@@ -321,7 +321,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         # Ensure that the object is stored at the location specified by
         # self.local_path().
         if not self.bucket_exists():
-            location_config = None
+            location_config = {}
             if self.provider.settings.aws_region is not None:
                 location_config = {
                     "LocationConstraint": self.provider.settings.aws_region
