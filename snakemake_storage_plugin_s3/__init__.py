@@ -123,7 +123,7 @@ class StorageProvider(StorageProviderBase):
         self.s3c = boto3.resource(
             "s3",
             endpoint_url=self.settings.endpoint_url,
-            aws_region=self.settings.aws_region,
+            region_name=self.settings.aws_region,
             aws_access_key_id=self.settings.access_key,
             aws_secret_access_key=self.settings.secret_key,
             aws_session_token=self.settings.token,
