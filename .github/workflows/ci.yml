@@ -90,8 +90,11 @@ jobs:
       - name: Start MinIO service
         run: docker-compose -f tests/docker-compose.yml up -d
 
-      - name: Setup MinIO client
-        uses: yakubique/setup-minio-cli@v1
+      - name: Install MinIO Client CLI
+        run: |
+          curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
+          chmod +x mc
+          sudo mv mc /usr/local/bin/
 
       - name: Configure MinIO client
         run: |
