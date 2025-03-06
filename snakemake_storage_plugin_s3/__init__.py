@@ -127,7 +127,6 @@ class StorageProvider(StorageProviderBase):
                     "mode": "standard",
                 },
             ),
-            verify=False,  # TODO required?
         )
 
     @classmethod
