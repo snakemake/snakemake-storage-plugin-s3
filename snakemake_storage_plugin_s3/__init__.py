@@ -58,6 +58,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
     )
     access_key: Optional[str] = field(
         default=None,
+        repr=False,
         metadata={
             "help": "S3 access key (if omitted, credentials are taken from "
             ".aws/credentials as e.g. created by aws configure)",
@@ -67,6 +68,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
     )
     secret_key: Optional[str] = field(
         default=None,
+        repr=False,
         metadata={
             "help": "S3 secret key (if omitted, credentials are taken from "
             ".aws/credentials as e.g. created by aws configure)",
