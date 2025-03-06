@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.13](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.12...v0.2.13) (2025-03-06)
+
+
+### Bug Fixes
+
+* `InsecureRequestWarning` from `urllib3` ([#36](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/36)) ([69bc140](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/69bc1405bf9fd65ec158a46c5c994188e22712ff))
+* prevent credential leakage ([#40](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/40)) ([948475c](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/948475c276d4a1c6050f0157bc05e4ba65980edd))
+
 ## [0.2.12](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.11...v0.2.12) (2024-08-14)
 
 
