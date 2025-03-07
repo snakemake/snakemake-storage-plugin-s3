@@ -82,23 +82,19 @@ jobs:
           python-version: "3.12"
           cache: poetry
 
-      - name: Set up Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install docker-compose
+      - name: Setup minio
+        uses: comfuture/minio-action@v1
+        with:
+          access_key: minio
+          secret_key: minio123
+          port: 9000
 
-      - name: Start MinIO service
-        run: docker-compose -f tests/docker-compose.yml up -d
-
-      - name: Install MinIO Client CLI
+      - name: Test minio
         run: |
-          curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
-          chmod +x mc
-          sudo mv mc /usr/local/bin/
-
-      - name: Configure MinIO client
-        run: |
-          mc alias set minio http://localhost:9000 minio minio123
+          export AWS_ACCESS_KEY_ID=minio
+          export AWS_SECRET_ACCESS_KEY=minio123
+          export AWS_EC2_METADATA_DISABLED=true
+          aws --endpoint-url http://127.0.0.1:9000/ s3 mb s3://test
 
       - name: Install dependencies
         run: poetry install
