@@ -51,7 +51,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             # For other items, we rather recommend to let people use a profile
             # for setting defaults
             # (https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles).
-            "env_var": False,
+            "env_var": True,
             # Optionally specify that setting is required when the executor is in use.
             "required": False,
         },
