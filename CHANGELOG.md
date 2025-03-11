@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.13...v0.3.0) (2025-03-11)
+
+
+### Features
+
+* allow specification of location (e.g. AWS region)  ([#38](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/38)) ([c78fa78](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/c78fa7815bfe1fa739626773cf6aa7ba3733f420))
+
+
+### Bug Fixes
+
+* limit inventory by prefix ([#43](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/43)) ([f9331e8](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/f9331e811c4f9bc7edda312b223d5eca0e74808c))
+
 ## [0.2.13](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.12...v0.2.13) (2025-03-06)
 
 
