@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 
 import boto3
 import botocore.credentials
+import os
 
 from snakemake_interface_common.exceptions import WorkflowError
 from snakemake_interface_storage_plugins.settings import StorageProviderSettingsBase
@@ -232,12 +233,14 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             # bucket has been inventorized before, stop here
             return
 
-        # check if bucket exists
         if not self.bucket_exists():
             cache.exists_in_storage[self.cache_key()] = False
-        else:
-            cache.exists_in_storage[self.get_inventory_parent()] = True
-            for obj in self.s3bucket().objects.all():
+            return
+
+        cache.exists_in_storage[self.get_inventory_parent()] = True
+        prefix = os.path.dirname(self.key)
+        if prefix:
+            for obj in self.s3bucket().objects.filter(Prefix=prefix):
                 key = self.cache_key(self._local_suffix_from_key(obj.key))
                 cache.mtime[key] = Mtime(storage=obj.last_modified.timestamp())
                 cache.size[key] = obj.size
