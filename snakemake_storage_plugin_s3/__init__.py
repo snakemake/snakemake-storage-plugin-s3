@@ -56,10 +56,10 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             "required": False,
         },
     )
-    aws_region: Optional[str] = field(
+    region: Optional[str] = field(
         default=None,
         metadata={
-            "help": "AWS S3 region constraint for AWS S3 storage requirement",
+            "help": "region constraint for the S3 storage",
             "env_var": True,
             "required": False,
         },
@@ -125,7 +125,7 @@ class StorageProvider(StorageProviderBase):
         self.s3c = boto3.resource(
             "s3",
             endpoint_url=self.settings.endpoint_url,
-            region_name=self.settings.aws_region,
+            region_name=self.settings.region,
             aws_access_key_id=self.settings.access_key,
             aws_secret_access_key=self.settings.secret_key,
             aws_session_token=self.settings.token,
@@ -323,10 +323,8 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         # self.local_path().
         if not self.bucket_exists():
             location_config = {}
-            if self.provider.settings.aws_region is not None:
-                location_config = {
-                    "LocationConstraint": self.provider.settings.aws_region
-                }
+            if self.provider.settings.region is not None:
+                location_config = {"LocationConstraint": self.provider.settings.region}
             self.provider.s3c.create_bucket(
                 Bucket=self.bucket, CreateBucketConfiguration=location_config
             )
