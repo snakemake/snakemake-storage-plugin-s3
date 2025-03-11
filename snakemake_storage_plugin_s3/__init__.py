@@ -51,8 +51,16 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             # For other items, we rather recommend to let people use a profile
             # for setting defaults
             # (https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles).
-            "env_var": False,
+            "env_var": True,
             # Optionally specify that setting is required when the executor is in use.
+            "required": False,
+        },
+    )
+    region: Optional[str] = field(
+        default=None,
+        metadata={
+            "help": "region constraint for the S3 storage",
+            "env_var": True,
             "required": False,
         },
     )
@@ -117,6 +125,7 @@ class StorageProvider(StorageProviderBase):
         self.s3c = boto3.resource(
             "s3",
             endpoint_url=self.settings.endpoint_url,
+            region_name=self.settings.region,
             aws_access_key_id=self.settings.access_key,
             aws_secret_access_key=self.settings.secret_key,
             aws_session_token=self.settings.token,
@@ -313,7 +322,12 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         # Ensure that the object is stored at the location specified by
         # self.local_path().
         if not self.bucket_exists():
-            self.provider.s3c.create_bucket(Bucket=self.bucket)
+            location_config = {}
+            if self.provider.settings.region is not None:
+                location_config = {"LocationConstraint": self.provider.settings.region}
+            self.provider.s3c.create_bucket(
+                Bucket=self.bucket, CreateBucketConfiguration=location_config
+            )
 
         if self.local_path().is_dir():
             self._is_dir = True

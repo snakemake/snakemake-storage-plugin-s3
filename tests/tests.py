@@ -7,6 +7,7 @@ from snakemake_interface_executor_plugins.settings import ExecutorSettingsBase
 from snakemake_interface_executor_plugins.registry import ExecutorPluginRegistry
 from snakemake.executors import local as local_executor
 from snakemake_storage_plugin_s3 import StorageProvider, StorageProviderSettings
+from snakemake.common.tests import TestWorkflowsMinioPlayStorageBase
 import snakemake.common.tests
 import snakemake.settings.types
 
@@ -31,9 +32,9 @@ class TestStorageNoSettings(TestStorageBase):
     def get_storage_provider_settings(self) -> Optional[StorageProviderSettingsBase]:
         # instantiate StorageProviderSettings of this plugin as appropriate
         return StorageProviderSettings(
-            endpoint_url="https://play.minio.io:9000",
-            access_key="Q3AM3UQ867SPQQA43P2F",
-            secret_key="zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG",
+            endpoint_url="http://127.0.0.1:9000",
+            access_key="minio",
+            secret_key="minio123",
         )
 
     def get_example_args(self) -> List[str]:
@@ -44,7 +45,7 @@ registry = ExecutorPluginRegistry()
 registry.register_plugin("local", local_executor)
 
 
-class TestWorkflows(snakemake.common.tests.TestWorkflowsMinioPlayStorageBase):
+class TestWorkflows(TestWorkflowsMinioPlayStorageBase):
     __test__ = True
 
     def get_executor(self) -> str:
