@@ -27,6 +27,8 @@ from snakemake_interface_storage_plugins.io import (
 )
 from snakemake_interface_storage_plugins.common import Operation
 
+DEFAULT_REGION = "us-east-1"
+
 
 # Optional:
 # Define settings for your storage plugin (e.g. host url, credentials).
@@ -58,7 +60,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
         },
     )
     region: Optional[str] = field(
-        default=None,
+        default=DEFAULT_REGION,
         metadata={
             "help": "region constraint for the S3 storage",
             "env_var": True,
@@ -325,12 +327,12 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         # Ensure that the object is stored at the location specified by
         # self.local_path().
         if not self.bucket_exists():
-            location_config = {}
-            if self.provider.settings.region is not None:
-                location_config = {"LocationConstraint": self.provider.settings.region}
-            self.provider.s3c.create_bucket(
-                Bucket=self.bucket, CreateBucketConfiguration=location_config
-            )
+            create_bucket_params = {"Bucket": self.bucket}
+            if self.provider.settings.region != DEFAULT_REGION:
+                create_bucket_params["CreateBucketConfiguration"] = {
+                    "LocationConstraint": self.provider.settings.region
+                }
+            self.provider.s3c.create_bucket(**create_bucket_params)
 
         if self.local_path().is_dir():
             self._is_dir = True
