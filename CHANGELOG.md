@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.3.0...v0.3.1) (2025-03-12)
+
+
+### Bug Fixes
+
+* location constraint for default region ([#44](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/44)) ([aae053a](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/aae053a92681ca641b50239ab2ae642b13e2ff59))
+
 ## [0.3.0](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.2.13...v0.3.0) (2025-03-11)
 
 
