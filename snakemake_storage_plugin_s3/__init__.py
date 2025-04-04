@@ -3,7 +3,7 @@ from typing import Iterable, List, Optional
 from urllib.parse import urlparse
 
 import boto3
-import botocore.credentials
+import botocore.exceptions
 import os
 
 from snakemake_interface_common.exceptions import WorkflowError
@@ -26,6 +26,16 @@ from snakemake_interface_storage_plugins.io import (
     Mtime,
 )
 from snakemake_interface_storage_plugins.common import Operation
+
+# This is a workaround for a boto3 issue with checksum calculation.
+# By default it would otherwise attach a checksum to each uploaded file, which
+# makes them corrupt. With AWS S3, those checksums are stripped when
+# retrieving files, but this does not happen when using non AWS S3.
+# See: https://github.com/boto/boto3/issues/4435
+# Work around from here:
+# https://github.com/boto/boto3/issues/4435#issuecomment-2648819900
+os.environ["AWS_REQUEST_CHECKSUM_CALCULATION"] = "when_required"
+os.environ["AWS_RESPONSE_CHECKSUM_VALIDATION"] = "when_required"
 
 DEFAULT_REGION = "us-east-1"
 
