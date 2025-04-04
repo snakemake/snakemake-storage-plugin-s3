@@ -3,6 +3,7 @@ from typing import Iterable, List, Optional
 from urllib.parse import urlparse
 
 import boto3
+import botocore.exceptions
 import os
 
 from snakemake_interface_common.exceptions import WorkflowError
