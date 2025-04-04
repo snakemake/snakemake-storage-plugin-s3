@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.3.2...v0.3.3) (2025-04-04)
+
+
+### Bug Fixes
+
+* work around boto issue that can cause attachment of checksums to any uploaded file on non AWS S3 ([#48](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/48)) ([caa3f9b](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/caa3f9ba8edc977eb068ae2714b5f4d27c324053))
+
 ## [0.3.2](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.3.1...v0.3.2) (2025-03-24)
 
 
