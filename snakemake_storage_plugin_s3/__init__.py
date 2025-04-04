@@ -31,7 +31,8 @@ from snakemake_interface_storage_plugins.common import Operation
 # makes them corrupt. With AWS S3, those checksums are stripped when
 # retrieving files, but this does not happen when using non AWS S3.
 # See: https://github.com/boto/boto3/issues/4435
-# Work around from here: https://github.com/boto/boto3/issues/4435#issuecomment-2648819900
+# Work around from here:
+# https://github.com/boto/boto3/issues/4435#issuecomment-2648819900
 os.environ["AWS_REQUEST_CHECKSUM_CALCULATION"] = "when_required"
 os.environ["AWS_RESPONSE_CHECKSUM_VALIDATION"] = "when_required"
 
