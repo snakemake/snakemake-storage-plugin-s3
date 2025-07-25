@@ -327,7 +327,9 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         return (
             item
             for item in self.s3bucket().objects.filter(Prefix=prefix)
-            if item.key != prefix
+            # ensure that only files are returned, not directories
+            # directories will be created automatically
+            if item.key != prefix and not item.key.endswith("/")
         )
 
     # The following to methods are only required if the class inherits from
