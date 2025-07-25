@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.3.3...v0.3.4) (2025-07-25)
+
+
+### Bug Fixes
+
+* fix FileExists bug when retrieving directories ([ce7974b](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/ce7974bab5485c22d8678061905816553fc472fa))
+
 ## [0.3.3](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.3.2...v0.3.3) (2025-04-04)
 
 
