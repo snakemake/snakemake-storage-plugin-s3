@@ -303,7 +303,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
 
     def mtime(self) -> float:
         # return the modification time
-        print(self.query, self.bucket, self.key)
+        import sys; print(self.query, self.bucket, self.key, file=sys.stderr)
         if self.is_dir():
             return max(item.last_modified.timestamp() for item in self.get_subkeys())
         else:
@@ -336,7 +336,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
 
     def get_subkeys(self):
         prefix = self.s3obj().key + "/"
-        print(prefix)
+        import sys; print(prefix, file=sys.stderr)
         return (
             item
             for item in self.s3bucket().objects.filter(Prefix=prefix)
