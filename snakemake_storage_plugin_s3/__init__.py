@@ -225,8 +225,8 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             self.bucket = parsed.netloc
             # norm the path to avoid problems with double slashes and resolve ".."
             # (which is invalid for S3 keys).
-            #self.key = posixpath.normpath(parsed.path)
-            self.key = parsed.path.lstrip("/")
+            self.key = posixpath.normpath(parsed.path)
+            print(parsed.path.lstrip("/"), self.key, file=sys.stderr)
             self._local_suffix = self._local_suffix_from_key(self.key)
         self._is_dir = None
 
