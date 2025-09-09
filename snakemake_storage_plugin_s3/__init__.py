@@ -292,7 +292,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
                     "the query contains unsupported characters (e.g. '..'), "
                     "if your credentials are invalid, or if your permissions are "
                     "insufficient."
-                )
+                ) from e
             elif err_code == "404":
                 if self.bucket_exists() and self.is_dir():
                     return True
@@ -303,6 +303,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
 
     def mtime(self) -> float:
         # return the modification time
+        print(self.query, self.bucket, self.key)
         if self.is_dir():
             return max(item.last_modified.timestamp() for item in self.get_subkeys())
         else:
@@ -335,6 +336,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
 
     def get_subkeys(self):
         prefix = self.s3obj().key + "/"
+        print(prefix)
         return (
             item
             for item in self.s3bucket().objects.filter(Prefix=prefix)
