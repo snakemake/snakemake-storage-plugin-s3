@@ -225,8 +225,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             self.bucket = parsed.netloc
             # norm the path to avoid problems with double slashes and resolve ".."
             # (which is invalid for S3 keys).
-            self.key = posixpath.normpath(parsed.path)
-            print("norm", parsed.path.lstrip("/"), self.key, file=sys.stderr)
+            self.key = posixpath.normpath(parsed.path.lstrip("/"))
             self._local_suffix = self._local_suffix_from_key(self.key)
         self._is_dir = None
 
@@ -281,9 +280,6 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
     # Here we simply rely on botos retry logic.
     def exists(self) -> bool:
         # return True if the object exists
-        # import traceback
-        # traceback.print_stack()
-        # print("exists", self.query)
         try:
             self.s3obj().load()
         except botocore.exceptions.ClientError as e:
@@ -305,7 +301,6 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
 
     def mtime(self) -> float:
         # return the modification time
-        print(self.query, self.bucket, self.key, file=sys.stderr)
         if self.is_dir():
             return max(item.last_modified.timestamp() for item in self.get_subkeys())
         else:
@@ -338,7 +333,6 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
 
     def get_subkeys(self):
         prefix = self.s3obj().key + "/"
-        print(prefix, file=sys.stderr)
         return (
             item
             for item in self.s3bucket().objects.filter(Prefix=prefix)
