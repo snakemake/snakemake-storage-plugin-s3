@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 import boto3
 import botocore.exceptions
 import os
+import os.path
 
 from snakemake_interface_common.exceptions import WorkflowError
 from snakemake_interface_storage_plugins.settings import StorageProviderSettingsBase
@@ -221,7 +222,9 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         if self.is_valid_query():
             parsed = urlparse(self.query)
             self.bucket = parsed.netloc
-            self.key = parsed.path.lstrip("/")
+            # norm the path to avoid problems with double slashes and resolve ".."
+            # (which is invalid for S3 keys).
+            self.key = os.path.normpath(parsed.path)
             self._local_suffix = self._local_suffix_from_key(self.key)
         self._is_dir = None
 
@@ -282,7 +285,15 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         try:
             self.s3obj().load()
         except botocore.exceptions.ClientError as e:
-            if e.response["Error"]["Code"] == "404":
+            err_code = e.response["Error"]["Code"]
+            if err_code == "400":
+                raise WorkflowError(
+                    f"Bad request for S3 object {self.query}. This can happen if "
+                    "the query contains unsupported characters (e.g. '..'), "
+                    "if your credentials are invalid, or if your permissions are "
+                    "insufficient."
+                )
+            elif err_code == "404":
                 if self.bucket_exists() and self.is_dir():
                     return True
                 return False
