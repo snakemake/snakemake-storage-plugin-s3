@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 import boto3
 import botocore.exceptions
 import os
-import os.path
+import posixpath
 
 from snakemake_interface_common.exceptions import WorkflowError
 from snakemake_interface_storage_plugins.settings import StorageProviderSettingsBase
