@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.3.4...v0.3.5) (2025-09-09)
+
+
+### Bug Fixes
+
+* norm the path part of a given query to not contain '..' (which is invalid for S3) ([#53](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/53)) ([7f167c1](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/7f167c1958f7fa365fd50fcc605746224f502824))
+
 ## [0.3.4](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.3.3...v0.3.4) (2025-07-25)
 
 
