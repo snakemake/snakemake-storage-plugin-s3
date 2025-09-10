@@ -308,7 +308,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
     def size(self) -> int:
         # return the size in bytes
         if self.is_dir():
-            return 0
+            return sum(item.content_length for item in self.get_subkeys())
         else:
             return self.s3obj().content_length
 
