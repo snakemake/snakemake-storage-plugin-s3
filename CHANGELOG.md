@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.6](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.3.5...v0.3.6) (2025-09-11)
+
+
+### Bug Fixes
+
+* properly calculate dir size ([#55](https://github.com/snakemake/snakemake-storage-plugin-s3/issues/55)) ([15cf8b5](https://github.com/snakemake/snakemake-storage-plugin-s3/commit/15cf8b5508a5f0fa6711fea607f225d5eed68ae9))
+
 ## [0.3.5](https://github.com/snakemake/snakemake-storage-plugin-s3/compare/v0.3.4...v0.3.5) (2025-09-09)
 
 
