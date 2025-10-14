@@ -326,7 +326,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             self.s3obj().download_file(self.local_path())
 
     def is_dir(self):
-        if self._is_dir is None:
+        if not self._is_dir:
             self._is_dir = any(self.get_subkeys())
         return self._is_dir
 
