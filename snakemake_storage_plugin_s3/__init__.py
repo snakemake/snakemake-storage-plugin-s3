@@ -1,3 +1,4 @@
+import enum
 from dataclasses import dataclass, field
 from typing import Iterable, List, Optional
 from urllib.parse import urlparse
@@ -207,6 +208,12 @@ class StorageProvider(StorageProviderBase):
         )
 
 
+class _FileType(enum.Enum):
+    UNKNOWN = enum.auto()
+    FILE = enum.auto()
+    DIRECTORY = enum.auto()
+
+
 # Required:
 # Implementation of storage object. If read-only storage (e.g. see
 # snakemake-storage-http for comparison), inherit from StorageObjectRead instead.
@@ -226,7 +233,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             # (which is invalid for S3 keys).
             self.key = posixpath.normpath(parsed.path.lstrip("/"))
             self._local_suffix = self._local_suffix_from_key(self.key)
-        self._is_dir = None
+        self._file_type = _FileType.UNKNOWN
 
     def s3obj(self, subkey: Optional[str] = ""):
         if subkey:
@@ -278,25 +285,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
     # Fallible methods should implement some retry logic.
     # Here we simply rely on botos retry logic.
     def exists(self) -> bool:
-        # return True if the object exists
-        try:
-            self.s3obj().load()
-        except botocore.exceptions.ClientError as e:
-            err_code = e.response["Error"]["Code"]
-            if err_code == "400":
-                raise WorkflowError(
-                    f"Bad request for S3 object {self.query}. This can happen if "
-                    "the query contains unsupported characters (e.g. '..'), "
-                    "if your credentials are invalid, or if your permissions are "
-                    "insufficient."
-                ) from e
-            elif err_code == "404":
-                if self.bucket_exists() and self.is_dir():
-                    return True
-                return False
-            else:
-                raise e
-        return True
+        return self.is_file() or self.is_dir()
 
     def mtime(self) -> float:
         # return the modification time
@@ -325,10 +314,38 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         else:
             self.s3obj().download_file(self.local_path())
 
+    def is_file(self) -> bool:
+        if self._file_type != _FileType.UNKNOWN:
+            return self._file_type == _FileType.FILE
+
+        try:
+            self.s3obj().load()
+        except botocore.exceptions.ClientError as e:
+            err_code = e.response["Error"]["Code"]
+            if err_code == "400":
+                raise WorkflowError(
+                    f"Bad request for S3 object {self.query}. This can happen if "
+                    "the query contains unsupported characters (e.g. '..'), "
+                    "if your credentials are invalid, or if your permissions are "
+                    "insufficient."
+                ) from e
+            elif err_code == "404":
+                return False
+            else:
+                raise e
+
+        self._file_type = _FileType.FILE
+        return True
+
     def is_dir(self):
-        if self._is_dir is None:
-            self._is_dir = any(self.get_subkeys())
-        return self._is_dir
+        if self._file_type != _FileType.UNKNOWN:
+            return self._file_type == _FileType.DIRECTORY
+
+        if not (self.bucket_exists() and any(self.get_subkeys())):
+            return False
+
+        self._file_type = _FileType.DIRECTORY
+        return True
 
     def get_subkeys(self):
         prefix = self.s3obj().key + "/"
@@ -355,13 +372,14 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             self.provider.s3c.create_bucket(**create_bucket_params)
 
         if self.local_path().is_dir():
-            self._is_dir = True
+            self._file_type = _FileType.DIRECTORY
             for item in self.local_path().rglob("*"):
                 if item.is_file():
                     self.s3obj(subkey=item.relative_to(self.local_path())).upload_file(
                         item
                     )
         else:
+            self._file_type = _FileType.FILE
             self.s3obj().upload_file(self.local_path())
 
     def remove(self):
