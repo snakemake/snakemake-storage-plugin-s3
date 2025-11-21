@@ -226,7 +226,6 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             # (which is invalid for S3 keys).
             self.key = posixpath.normpath(parsed.path.lstrip("/"))
             self._local_suffix = self._local_suffix_from_key(self.key)
-        self._is_dir = None
 
     def s3obj(self, subkey: Optional[str] = ""):
         if subkey:
@@ -326,9 +325,20 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             self.s3obj().download_file(self.local_path())
 
     def is_dir(self):
-        if self._is_dir is None:
-            self._is_dir = any(self.get_subkeys())
-        return self._is_dir
+        if self.local_path().is_dir():
+            return True
+
+        try:
+            self.s3obj(".snakemake_timestamp").load()
+            return True
+        except botocore.exceptions.ClientError as e:
+            err_code = e.response["Error"]["Code"]
+            if err_code == "404":
+                return False
+            else:
+                raise e
+
+        return False
 
     def get_subkeys(self):
         prefix = self.s3obj().key + "/"
@@ -355,7 +365,6 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             self.provider.s3c.create_bucket(**create_bucket_params)
 
         if self.local_path().is_dir():
-            self._is_dir = True
             for item in self.local_path().rglob("*"):
                 if item.is_file():
                     self.s3obj(subkey=item.relative_to(self.local_path())).upload_file(
