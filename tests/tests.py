@@ -1,4 +1,5 @@
 from typing import List, Optional, Type
+import time
 import uuid
 from snakemake_interface_storage_plugins.tests import TestStorageBase
 from snakemake_interface_storage_plugins.storage_provider import StorageProviderBase
@@ -16,6 +17,7 @@ class TestStorageNoSettings(TestStorageBase):
     __test__ = True
     retrieve_only = False
     files_only = False
+    touch = True
 
     def get_query(self, tmp_path) -> str:
         return "s3://snakemake-test-bucket/testdir1/testdir2/test-file.txt"
@@ -39,6 +41,26 @@ class TestStorageNoSettings(TestStorageBase):
 
     def get_example_args(self) -> List[str]:
         return []
+
+    def test_touch_updates_mtime(self, tmp_path):
+        """Touching an S3 object via self-copy resets its LastModified."""
+        obj = self._get_obj(tmp_path, self.get_query(tmp_path))
+
+        dirpath = obj.local_path().parent
+        dirpath.mkdir(parents=True, exist_ok=True)
+        obj.local_path().write_text("test")
+        obj.store_object()
+
+        assert obj.exists()
+        mtime_before = obj.mtime()
+
+        # S3 LastModified has sub-second resolution on some backends but only
+        # second-level precision on others; sleep long enough to observe a change.
+        time.sleep(1.1)
+        obj.touch()
+
+        mtime_after = obj.mtime()
+        assert mtime_after > mtime_before
 
 
 registry = ExecutorPluginRegistry()

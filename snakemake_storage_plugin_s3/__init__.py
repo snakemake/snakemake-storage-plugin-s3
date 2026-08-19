@@ -19,6 +19,7 @@ from snakemake_interface_storage_plugins.storage_object import (
     StorageObjectRead,
     StorageObjectWrite,
     StorageObjectGlob,
+    StorageObjectTouch,
     retry_decorator,
 )
 from snakemake_interface_storage_plugins.io import (
@@ -210,7 +211,9 @@ class StorageProvider(StorageProviderBase):
 # Required:
 # Implementation of storage object. If read-only storage (e.g. see
 # snakemake-storage-http for comparison), inherit from StorageObjectRead instead.
-class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
+class StorageObject(
+    StorageObjectRead, StorageObjectWrite, StorageObjectGlob, StorageObjectTouch
+):
     # For compatibility with future changes, you should not overwrite the __init__
     # method. Instead, use __post_init__ to set additional attributes and initialize
     # futher stuff.
@@ -374,6 +377,26 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         # check if bucket is empty and remove it if so
         if not any(self.s3bucket().objects.all()):
             self.s3bucket().delete()
+
+    def touch(self):
+        # Update the object's modification time by copying it onto itself.
+        # This matches the semantics of a local touch for S3 objects, where
+        # CopyObject resets LastModified. S3 rejects a self-copy that changes
+        # nothing, so we replace metadata with its current values.
+        if self.is_dir():
+            for item in self.get_subkeys():
+                self._touch_s3_object(item.Object())
+        else:
+            self._touch_s3_object(self.s3obj())
+
+    def _touch_s3_object(self, s3obj):
+        s3obj.load()
+        s3obj.copy_from(
+            CopySource={"Bucket": s3obj.bucket_name, "Key": s3obj.key},
+            MetadataDirective="REPLACE",
+            Metadata=s3obj.metadata or {},
+            ContentType=s3obj.content_type,
+        )
 
     @retry_decorator
     def list_candidate_matches(self) -> Iterable[str]:
