@@ -391,12 +391,23 @@ class StorageObject(
 
     def _touch_s3_object(self, s3obj):
         s3obj.load()
-        s3obj.copy_from(
+        # ContentType is optional on CopyObject's underlying param validation,
+        # but boto3 rejects it explicitly if the *value* is None rather than
+        # simply absent -- an object with no Content-Type set (e.g. uploaded
+        # via a generic S3 client like rclone, which leaves it unset) has
+        # s3obj.content_type == None, and passing that through unconditionally
+        # raised botocore.exceptions.ParamValidationError: "Invalid type for
+        # parameter ContentType, value: None, type: <class 'NoneType'>"
+        # (reproduced touching a real chains.nc object, 2026-08-25). Only pass
+        # ContentType when there actually is one to preserve.
+        kwargs = dict(
             CopySource={"Bucket": s3obj.bucket_name, "Key": s3obj.key},
             MetadataDirective="REPLACE",
             Metadata=s3obj.metadata or {},
-            ContentType=s3obj.content_type,
         )
+        if s3obj.content_type is not None:
+            kwargs["ContentType"] = s3obj.content_type
+        s3obj.copy_from(**kwargs)
 
     @retry_decorator
     def list_candidate_matches(self) -> Iterable[str]:
