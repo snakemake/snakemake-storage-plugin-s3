@@ -238,6 +238,17 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
     def s3bucket(self):
         return self.provider.s3c.Bucket(self.bucket)
 
+    @property
+    def prefix(self):
+        """Get the prefix of this object with a trailing slash"""
+        prefix = posixpath.dirname(self.key)
+        if not prefix:
+            return
+
+        # the trailing slash keeps siblings like data_old/ out of a listing of data/
+        prefix = f"{prefix}/"
+        return prefix
+
     async def inventory(self, cache: IOCacheStorageInterface):
         """From this file, try to find as much existence and modification date
         information as possible. Only retrieve that information that comes for free
@@ -245,12 +256,9 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         """
         # Top-level keys are skipped, since their listing would be the whole
         # bucket (see #24).
-        prefix = self.get_inventory_parent()
+        prefix = self.prefix
         if not prefix:
             return
-
-        # make sure the prefix includes trailing slash
-        prefix = f"{prefix}/"
 
         # If this is implemented in a storage object, results have to be stored in
         # the given IOCache object.
@@ -263,9 +271,23 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
 
         for obj in self.s3bucket().objects.filter(Prefix=prefix):
             key = self.cache_key(self._local_suffix_from_key(obj.key))
-            cache.mtime[key] = Mtime(storage=obj.last_modified.timestamp())
-            cache.size[key] = obj.size
             cache.exists_in_storage[key] = True
+
+            # folder objects (keys ending with "/") say nothing about
+            # the mtime or size of the folder
+            # more annoyingly, an object's key can actually end with "/"
+            if not obj.key.endswith("/"):
+                cache.mtime[key] = Mtime(storage=obj.last_modified.timestamp())
+                cache.size[key] = obj.size
+
+            # if our key is folder/subfolder/key, we want to make sure we report
+            # both folder/subfolder and folder as existing "folders"
+            parent = posixpath.dirname(obj.key.rstrip("/"))
+            while parent.startswith(prefix):
+                parent_key = self.cache_key(self._local_suffix_from_key(parent))
+                cache.exists_in_storage[parent_key] = True
+                parent = posixpath.dirname(parent)
+
         cache.exists_in_storage[self._inventory_marker(prefix)] = True
 
     def _inventory_marker(self, prefix: str) -> str:
@@ -278,10 +300,11 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             return True
 
         # now check if any of the parents have already been inventorized
-        # parts: "folder/subfolder/subsubfolder/" -> ["folder", "subfolder", "subsubfolder"]
+        # parts: "folder/subfolder/subsubfolder/" ->
+        # ["folder", "subfolder", "subsubfolder"]
         parts = prefix.rstrip("/").split("/")
-        # parents: ["folder/", "folder/subfolder/]
-        parents = ["/".join(parts[:i]) + "/" for i in range(1, len(parts))]  # -> ["d1/", "d1/sub/"]
+        # parents: ["folder/", "folder/subfolder/"]
+        parents = ["/".join(parts[:i]) + "/" for i in range(1, len(parts))]
         for parent in parents:
             if self._inventory_marker(parent) in cache.exists_in_storage:
                 return True
@@ -290,7 +313,8 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
 
     def get_inventory_parent(self) -> Optional[str]:
         """Return the parent directory of this object."""
-        return posixpath.dirname(self.key)
+        # warning: this returns the BUCKET, not the parent directory
+        return self.cache_key(self.bucket)
 
     def local_suffix(self) -> str:
         return self._local_suffix
