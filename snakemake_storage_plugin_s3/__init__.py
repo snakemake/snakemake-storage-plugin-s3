@@ -443,6 +443,6 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
     def bucket_exists(self):
         try:
             self.provider.s3c.meta.client.head_bucket(Bucket=self.bucket)
+            return True
         except Exception:
             return False
-        return True
