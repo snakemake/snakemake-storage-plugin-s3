@@ -151,8 +151,6 @@ class StorageProvider(StorageProviderBase):
                 },
             ),
         )
-        # to keep track of known existing buckets
-        self._existing_buckets: set[str] = set()
 
     @classmethod
     def example_queries(cls) -> List[ExampleQuery]:
@@ -404,7 +402,6 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
                     "LocationConstraint": self.provider.settings.region
                 }
             self.provider.s3c.create_bucket(**create_bucket_params)
-            self.provider._existing_buckets.add(self.bucket)
 
         if self.local_path().is_dir():
             self._is_dir = True
@@ -426,7 +423,6 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         # check if bucket is empty and remove it if so
         if not any(self.s3bucket().objects.all()):
             self.s3bucket().delete()
-            self.provider._existing_buckets.discard(self.bucket)
 
     @retry_decorator
     def list_candidate_matches(self) -> Iterable[str]:
@@ -445,11 +441,8 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             )
 
     def bucket_exists(self):
-        if self.bucket in self.provider._existing_buckets:
-            return True
         try:
             self.provider.s3c.meta.client.head_bucket(Bucket=self.bucket)
         except Exception:
             return False
-        self.provider._existing_buckets.add(self.bucket)
         return True
