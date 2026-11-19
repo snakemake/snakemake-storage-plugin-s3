@@ -290,7 +290,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
 
     def _inventory_marker(self, prefix: str) -> str:
         """Return the IOCache key recording that the given prefix has been listed."""
-        return "s3-inventory:" + self.cache_key(self._local_suffix_from_key(prefix))
+        return self.cache_key(self._local_suffix_from_key(prefix))
 
     def _is_inventorized(self, prefix: str, cache: IOCacheStorageInterface) -> bool:
         """Check if the given prefix has been inventorized before."""
