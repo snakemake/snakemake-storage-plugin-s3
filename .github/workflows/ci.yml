@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3
       
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
 
@@ -23,7 +23,7 @@ jobs:
       - name: Determine dependencies
         run: poetry lock
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
           cache: poetry
@@ -38,9 +38,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
 
@@ -50,7 +50,7 @@ jobs:
       - name: Determine dependencies
         run: poetry lock
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
           cache: poetry
@@ -65,9 +65,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
 
@@ -77,13 +77,13 @@ jobs:
       - name: Determine dependencies
         run: poetry lock
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
           cache: poetry
 
       - name: Setup minio
-        uses: comfuture/minio-action@v1
+        uses: comfuture/minio-action@eea2a2d256ae70ce4b83628ca907b63bc0de7c2d # v1
         with:
           access_key: minio
           secret_key: minio123
@@ -100,7 +100,7 @@ jobs:
         run: poetry install
 
       - name: Run pytest
-        run: poetry run coverage run -m pytest tests/tests.py
+        run: poetry run coverage run -m pytest tests
 
       - name: Run Coverage
         run: poetry run coverage report -m
