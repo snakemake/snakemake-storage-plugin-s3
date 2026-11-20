@@ -22,12 +22,16 @@ black = "^23.9.1"
 flake8 = ">=6.1,<8.0"
 coverage = "^7.3.1"
 pytest = ">=7.4.2,<9.0.0"
+moto = {version = ">=5,<6", extras = ["s3"]}
 snakemake = "^9.1.0"
 setuptools = "*"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+python_files = ["test_*.py", "tests.py"]
 
 [tool.coverage.run]
 omit = [".*", "*/site-packages/*", "Snakefile"]

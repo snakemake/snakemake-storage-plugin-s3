@@ -27,6 +27,7 @@ from snakemake_interface_storage_plugins.io import (
     Mtime,
 )
 from snakemake_interface_storage_plugins.common import Operation
+from snakemake_storage_plugin_s3.mtime import effective_mtime_ns, format_mtime_ns
 
 # This is a workaround for a boto3 issue with checksum calculation.
 # By default it would otherwise attach a checksum to each uploaded file, which
@@ -237,33 +238,65 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         return self.provider.s3c.Bucket(self.bucket)
 
     async def inventory(self, cache: IOCacheStorageInterface):
-        """From this file, try to find as much existence and modification date
-        information as possible. Only retrieve that information that comes for free
-        given the current object.
-        """
+        """Cache parent-prefix metadata, loading preserved mtimes with HEAD requests."""
         # If this is implemented in a storage object, results have to be stored in
         # the given IOCache object.
 
         if self.get_inventory_parent() in cache.exists_in_storage:
-            # bucket has been inventorized before, stop here
+            # This parent prefix has already been inventoried in this cache.
             return
 
         if not self.bucket_exists():
             cache.exists_in_storage[self.cache_key()] = False
             return
 
-        cache.exists_in_storage[self.get_inventory_parent()] = True
-        prefix = os.path.dirname(self.key)
-        if prefix:
-            for obj in self.s3bucket().objects.filter(Prefix=prefix):
-                key = self.cache_key(self._local_suffix_from_key(obj.key))
-                cache.mtime[key] = Mtime(storage=obj.last_modified.timestamp())
-                cache.size[key] = obj.size
-                cache.exists_in_storage[key] = True
+        parent = posixpath.dirname(self.key)
+        prefix = parent + "/" if parent else ""
+        entries = []
+        incomplete = False
+        for item in self.s3bucket().objects.filter(Prefix=prefix):
+            if item.key.endswith("/"):
+                continue
+            key = self.cache_key(self._local_suffix_from_key(item.key))
+            cached_mtime = cache.mtime.get(key)
+            if (
+                cache.exists_in_storage.get(key) is True
+                and key in cache.size
+                and cached_mtime is not None
+                and cached_mtime.storage() is not None
+            ):
+                continue
+            obj = item.Object()
+            try:
+                timestamp_ns = effective_mtime_ns(obj.metadata, obj.last_modified)
+                entries.append((key, timestamp_ns / 1_000_000_000, obj.content_length))
+            except botocore.exceptions.ClientError as error:
+                code = error.response["Error"]["Code"]
+                if item.key != self.key and code in {
+                    "403",
+                    "AccessDenied",
+                    "404",
+                    "NoSuchKey",
+                    "NotFound",
+                }:
+                    # Optional sibling inventory must not require extra read grants.
+                    incomplete = True
+                    continue
+                raise
+        # A failed lookup must not publish partial metadata or a completion marker.
+        for key, timestamp, size in entries:
+            cache.mtime[key] = Mtime(storage=timestamp)
+            cache.size[key] = size
+            cache.exists_in_storage[key] = True
+        if not incomplete:
+            cache.exists_in_storage[self.get_inventory_parent()] = True
 
     def get_inventory_parent(self) -> Optional[str]:
-        """Return the parent directory of this object."""
-        return self.cache_key(self.bucket)
+        """Return a prefix-completion key outside the filesystem cache-key namespace."""
+        parent = posixpath.dirname(self.key)
+        return "\x00s3-inventory:" + self.cache_key(
+            self._local_suffix_from_key(parent or "")
+        )
 
     def local_suffix(self) -> str:
         return self._local_suffix
@@ -301,9 +334,16 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
     def mtime(self) -> float:
         # return the modification time
         if self.is_dir():
-            return max(item.last_modified.timestamp() for item in self.get_subkeys())
+            return (
+                max(
+                    effective_mtime_ns(obj.metadata, obj.last_modified)
+                    for obj in (item.Object() for item in self.get_subkeys())
+                )
+                / 1_000_000_000
+            )
         else:
-            return self.s3obj().last_modified.timestamp()
+            obj = self.s3obj()
+            return effective_mtime_ns(obj.metadata, obj.last_modified) / 1_000_000_000
 
     def size(self) -> int:
         # return the size in bytes
@@ -316,14 +356,40 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
         # Ensure that the object is accessible locally under self.local_path()
         if self.is_dir():
             self.local_path().mkdir(parents=True, exist_ok=True)
+            members = []
             for item in self.get_subkeys():
-                prefix_length = len(self.s3obj().key) + 1  # +1 for trailing slash
-                subkey = item.key[prefix_length:]
+                obj = item.Object()
+                members.append(
+                    (obj, effective_mtime_ns(obj.metadata, obj.last_modified))
+                )
+            for obj, mtime_ns in members:
+                subkey = obj.key[len(self.key) + 1 :]
                 localpath = self.local_path() / subkey
                 localpath.parent.mkdir(parents=True, exist_ok=True)
-                item.Object().download_file(localpath)
+                obj.download_file(localpath)
+                os.utime(localpath, ns=(localpath.stat().st_atime_ns, mtime_ns))
+            # Snakemake reads a directory's marker, or its own mtime without one.
+            # Align that timestamp carrier with the remote maximum for each directory.
+            directories = {}
+            for obj, mtime_ns in members:
+                localpath = self.local_path() / obj.key[len(self.key) + 1 :]
+                for directory in localpath.parents:
+                    if directory == self.local_path().parent:
+                        break
+                    directories[directory] = max(
+                        directories.get(directory, mtime_ns), mtime_ns
+                    )
+            for directory, timestamp_ns in directories.items():
+                marker = directory / ".snakemake_timestamp"
+                carrier = marker if marker.is_file() else directory
+                os.utime(carrier, ns=(carrier.stat().st_atime_ns, timestamp_ns))
         else:
-            self.s3obj().download_file(self.local_path())
+            obj = self.s3obj()
+            mtime_ns = effective_mtime_ns(obj.metadata, obj.last_modified)
+            obj.download_file(self.local_path())
+            os.utime(
+                self.local_path(), ns=(self.local_path().stat().st_atime_ns, mtime_ns)
+            )
 
     def is_dir(self):
         if self._is_dir is None:
@@ -359,10 +425,22 @@ class StorageObject(StorageObjectRead, StorageObjectWrite, StorageObjectGlob):
             for item in self.local_path().rglob("*"):
                 if item.is_file():
                     self.s3obj(subkey=item.relative_to(self.local_path())).upload_file(
-                        item
+                        item,
+                        ExtraArgs={
+                            "Metadata": {
+                                "mtime": format_mtime_ns(item.stat().st_mtime_ns)
+                            }
+                        },
                     )
         else:
-            self.s3obj().upload_file(self.local_path())
+            self.s3obj().upload_file(
+                self.local_path(),
+                ExtraArgs={
+                    "Metadata": {
+                        "mtime": format_mtime_ns(self.local_path().stat().st_mtime_ns)
+                    }
+                },
+            )
 
     def remove(self):
         # Remove the object from the storage.
